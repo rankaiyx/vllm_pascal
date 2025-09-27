@@ -1,3 +1,21 @@
+Pre-install:
+
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
+
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+
+sudo apt-get update
+
+sudo apt-get -y install cuda-toolkit-12-6
+
+Add nvcc to the PATH environment variable
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+
+bash Miniconda3-latest-Linux-x86_64.sh
+
+do you wish to update your shell profile to automatically initialize conda? yes
+
 Install:
 
 mkdir vllm
