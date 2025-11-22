@@ -1545,8 +1545,30 @@ void gemm_half_q_half_cuda(cublasHandle_t cublas_handle, const half* a,
 
     const half alpha = __float2half(1.0f);
     const half beta = __float2half(0.0f);
-    cublasHgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, size_n, size_m, size_k,
-                &alpha, temp_dq, size_n, a, size_k, &beta, c, size_n);
+    //cublasHgemm(cublas_handle, CUBLAS_OP_N, CUBLAS_OP_N, size_n, size_m, size_k,
+    //            &alpha, temp_dq, size_n, a, size_k, &beta, c, size_n);
+    cublasGemmEx(
+      cublas_handle,                // Handle
+      CUBLAS_OP_N,                  // transa
+      CUBLAS_OP_N,                  // transb
+      size_n,                       // m
+      size_m,                       // n
+      size_k,                       // k
+      &alpha,                       // alpha
+      temp_dq,                      // A
+      CUDA_R_16F,                   // A type
+      size_n,                       // lda
+      a,                            // B
+      CUDA_R_16F,                   // B type
+      size_k,                       // ldb
+      &beta,                        // beta
+      c,                            // C
+      CUDA_R_16F,                   // C type
+      size_n,                       // ldc
+      CUDA_R_32F,                   // computeType (FP32 for accumulation)
+      CUBLAS_GEMM_DEFAULT           // auto choose
+    );
+
   } else if (use_exllama) {
     // Quantized matmul
     int max_chunks = size_m / BLOCK_M_SIZE_MAX;
