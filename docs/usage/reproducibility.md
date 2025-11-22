@@ -1,12 +1,9 @@
 # Reproducibility
 
-vLLM does not guarantee the reproducibility of the results by default, for the sake of performance. You need to do the following to achieve
-reproducible results:
+vLLM does not guarantee the reproducibility of the results by default, for the sake of performance. To achieve
+reproducible results, you need to turn off multiprocessing to make the scheduling deterministic by setting `VLLM_ENABLE_V1_MULTIPROCESSING=0`.
 
-- For V1: Turn off multiprocessing to make the scheduling deterministic by setting `VLLM_ENABLE_V1_MULTIPROCESSING=0`.
-- For V0: Set the global seed (see below).
-
-Example: <gh-file:examples/offline_inference/reproducibility.py>
+Example: [examples/offline_inference/reproducibility.py](../../examples/offline_inference/reproducibility.py)
 
 !!! warning
 
@@ -30,8 +27,6 @@ However, in some cases, setting the seed will also [change the random state in u
 
 ### Default Behavior
 
-In V0, the `seed` parameter defaults to `None`. When the `seed` parameter is `None`, the random states for `random`, `np.random`, and `torch.manual_seed` are not set. This means that each run of vLLM will produce different results if `temperature > 0`, as expected.
-
 In V1, the `seed` parameter defaults to `0` which sets the random state for each worker, so the results will remain consistent for each vLLM run even if `temperature > 0`.
 
 !!! note
@@ -39,7 +34,7 @@ In V1, the `seed` parameter defaults to `0` which sets the random state for each
     It is impossible to un-specify a seed for V1 because different workers need to sample the same outputs
     for workflows such as speculative decoding.
     
-    For more information, see: <gh-pr:17929>
+    For more information, see: <https://github.com/vllm-project/vllm/pull/17929>
 
 ### Locality of random state
 

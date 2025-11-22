@@ -5,9 +5,20 @@ import os
 import pytest
 
 from tests.models.language.pooling_mteb_test.mteb_utils import (
-    MTEB_RERANK_LANGS, MTEB_RERANK_TASKS, MTEB_RERANK_TOL,
-    RerankClientMtebEncoder, ScoreClientMtebEncoder, run_mteb_rerank)
+    MTEB_RERANK_LANGS,
+    MTEB_RERANK_TASKS,
+    MTEB_RERANK_TOL,
+    RerankClientMtebEncoder,
+    ScoreClientMtebEncoder,
+    run_mteb_rerank,
+)
 from tests.utils import RemoteOpenAIServer
+from vllm.platforms import current_platform
+
+if current_platform.is_rocm():
+    pytest.skip(
+        "Encoder self-attention is not implemented on ROCm.", allow_module_level=True
+    )
 
 os.environ["VLLM_LOGGING_LEVEL"] = "WARNING"
 
@@ -17,10 +28,7 @@ st_main_score = 0.33457
 
 @pytest.fixture(scope="module")
 def server():
-    args = [
-        "--runner", "pooling", "--enforce-eager",
-        "--disable-uvicorn-access-log"
-    ]
+    args = ["--runner", "pooling", "--enforce-eager", "--disable-uvicorn-access-log"]
 
     with RemoteOpenAIServer(MODEL_NAME, args) as remote_server:
         yield remote_server
@@ -29,8 +37,7 @@ def server():
 def test_mteb_score(server):
     url = server.url_for("score")
     encoder = ScoreClientMtebEncoder(MODEL_NAME, url)
-    vllm_main_score = run_mteb_rerank(encoder, MTEB_RERANK_TASKS,
-                                      MTEB_RERANK_LANGS)
+    vllm_main_score = run_mteb_rerank(encoder, MTEB_RERANK_TASKS, MTEB_RERANK_LANGS)
 
     print("VLLM main score: ", vllm_main_score)
     print("SentenceTransformer main score: ", st_main_score)
@@ -44,8 +51,7 @@ def test_mteb_score(server):
 def test_mteb_rerank(server):
     url = server.url_for("rerank")
     encoder = RerankClientMtebEncoder(MODEL_NAME, url)
-    vllm_main_score = run_mteb_rerank(encoder, MTEB_RERANK_TASKS,
-                                      MTEB_RERANK_LANGS)
+    vllm_main_score = run_mteb_rerank(encoder, MTEB_RERANK_TASKS, MTEB_RERANK_LANGS)
 
     print("VLLM main score: ", vllm_main_score)
     print("SentenceTransformer main score: ", st_main_score)
