@@ -1,3 +1,10 @@
+2025.11.22 update
+
+https://github.com/rankaiyx/vllm_pascal/tree/pascal_2025.11.22
+
+Please switch branches as needed during the following operations.
+
+-----------------------
 Pre-install:
 
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb
